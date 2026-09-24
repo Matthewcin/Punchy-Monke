@@ -1,4 +1,5 @@
 from datetime import datetime
+from config import VERSION
 
 def get_profile_message(user_first_name: str, telegram_id: int, user_data: dict, checks_count: int) -> str:
     plan = user_data.get('plan_type', 'none') if user_data else 'none'
@@ -34,6 +35,7 @@ def get_profile_message(user_first_name: str, telegram_id: int, user_data: dict,
         f"Lifetime Days Purchased: {total_days}\n"
         f"Trial Used: {is_trial}\n\n"
         f"<b>📊 Statistics</b>\n"
-        f"Total Checks: {checks_count}"
+        f"Total Checks: {checks_count}\n\n"
+        f"<code>{VERSION}</code> - <a href='https://t.me/whois_tyler'>Coded by VirusNTO</a>"
     )
     return text

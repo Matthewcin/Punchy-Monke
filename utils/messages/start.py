@@ -22,7 +22,6 @@ def get_start_message(user_first_name: str, telegram_id: int, user_data: dict) -
         "• American Express\n"
         "• MyGiftCardMall\n"
         "• Walmart\n\n"
-        "<i>Select an option below to manage your subscription or start checking.</i>\n\n"
-        f"<code>{VERSION}</code>"
+        "<i>Select an option below to manage your subscription or start checking.</i>"
     )
     return text
