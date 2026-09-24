@@ -10,10 +10,18 @@ def get_main_keyboard(role: str, has_checks: bool) -> InlineKeyboardMarkup:
             InlineKeyboardButton(text="💎 Subscription", callback_data="menu_subscription"),
             InlineKeyboardButton(text="📦 Orders", callback_data="menu_orders")
         ])
+        
+        admin_dev_row = []
         if role in ["admin", "dev"]:
             if has_checks:
                 buttons.append([InlineKeyboardButton(text="📋 Latest Checks", callback_data="menu_latest_checks")])
-            buttons.append([InlineKeyboardButton(text="⚙️ Admin Panel", callback_data="menu_admin")])
+            admin_dev_row.append(InlineKeyboardButton(text="⚙️ Admin Panel", callback_data="menu_admin"))
+            
+        if role == "dev":
+            admin_dev_row.append(InlineKeyboardButton(text="👨‍💻 Dev Panel", callback_data="menu_dev"))
+            
+        if admin_dev_row:
+            buttons.append(admin_dev_row)
             
     elif role == "none":
         buttons.append([InlineKeyboardButton(text="🎁 Free Trial", callback_data="menu_free_trial")])
@@ -45,14 +53,29 @@ def get_pagination_keyboard(current_page: int, total_pages: int) -> InlineKeyboa
 
 def get_admin_panel_keyboard(role: str) -> InlineKeyboardMarkup:
     buttons = [
-        [InlineKeyboardButton(text="🐛 DevLog", callback_data="admin_devlogs_page_1")]
+        [InlineKeyboardButton(text="🐛 DevLogs", callback_data="admin_devlogs_page_1")]
     ]
-    if role == "dev":
-        buttons.append([InlineKeyboardButton(text="📝 Add Log", callback_data="dev_add_log")])
-        buttons.append([InlineKeyboardButton(text="🤖 Bot Status", callback_data="dev_bot_status")])
-        buttons.append([InlineKeyboardButton(text="🚧 Maintenance Mode", callback_data="dev_maintenance")])
-        
     buttons.append([InlineKeyboardButton(text="🔙 Go Back", callback_data="go_back")])
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+def get_dev_panel_keyboard() -> InlineKeyboardMarkup:
+    buttons = [
+        [InlineKeyboardButton(text="📝 Add Log", callback_data="dev_add_log")],
+        [InlineKeyboardButton(text="🎭 Simulate Roles", callback_data="dev_simulate_roles")],
+        [InlineKeyboardButton(text="🤖 Bot Status", callback_data="dev_bot_status")],
+        [InlineKeyboardButton(text="🚧 Maintenance Mode", callback_data="dev_maintenance")],
+        [InlineKeyboardButton(text="🔙 Go Back", callback_data="go_back")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+def get_role_simulation_keyboard() -> InlineKeyboardMarkup:
+    buttons = [
+        [InlineKeyboardButton(text="👤 User (None)", callback_data="sim_role_none")],
+        [InlineKeyboardButton(text="🟢 Active User", callback_data="sim_role_active_user")],
+        [InlineKeyboardButton(text="🔴 Expired User", callback_data="sim_role_expired_user")],
+        [InlineKeyboardButton(text="⚙️ Admin", callback_data="sim_role_admin")],
+        [InlineKeyboardButton(text="🔙 Go Back", callback_data="menu_dev")]
+    ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 def get_devlog_dates_keyboard(dates, current_page: int, total_pages: int) -> InlineKeyboardMarkup:
