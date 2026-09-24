@@ -10,6 +10,8 @@ from database.db import get_pool, init_db
 from handlers.user import user_router
 from handlers.callbacks import callback_router
 from handlers.profile import profile_router
+from handlers.admin import admin_router
+from handlers.dev import dev_router
 
 logging.basicConfig(level=logging.INFO)
 
@@ -33,6 +35,8 @@ async def main():
     dp.include_router(user_router)
     dp.include_router(callback_router)
     dp.include_router(profile_router)
+    dp.include_router(admin_router)
+    dp.include_router(dev_router)
     
     app = web.Application()
     app.router.add_get('/', handle_ping)

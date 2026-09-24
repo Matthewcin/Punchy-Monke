@@ -38,4 +38,11 @@ async def init_db(pool):
                 payment_status VARCHAR(20),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+
+            CREATE TABLE IF NOT EXISTS devlogs (
+                log_id SERIAL PRIMARY KEY,
+                log_date DATE DEFAULT CURRENT_DATE,
+                message TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
         ''')
