@@ -8,11 +8,11 @@ from aiohttp import web
 from config import BOT_TOKEN
 from database.db import get_pool, init_db
 from handlers.user import user_router
+from handlers.callbacks import callback_router
 
 logging.basicConfig(level=logging.INFO)
 
 async def handle_ping(request):
-    """Hello"""
     return web.Response(text="Bot is running!")
 
 async def main():
@@ -27,7 +27,8 @@ async def main():
     dp = Dispatcher()
     dp["db_pool"] = pool
     dp.include_router(user_router)
-
+    dp.include_router(callback_router)
+    
     app = web.Application()
     app.router.add_get('/', handle_ping)
     

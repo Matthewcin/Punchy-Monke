@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-def get_main_keyboard(role: str) -> InlineKeyboardMarkup:
+def get_main_keyboard(role: str, has_checks: bool) -> InlineKeyboardMarkup:
     buttons = []
 
     if role in ["admin", "dev", "active_user", "expired_user"]:
@@ -11,7 +11,8 @@ def get_main_keyboard(role: str) -> InlineKeyboardMarkup:
             InlineKeyboardButton(text="📦 Orders", callback_data="menu_orders")
         ])
         if role in ["admin", "dev"]:
-            buttons.append([InlineKeyboardButton(text="📋 Latest Checks", callback_data="menu_latest_checks")])
+            if has_checks:
+                buttons.append([InlineKeyboardButton(text="📋 Latest Checks", callback_data="menu_latest_checks")])
             buttons.append([InlineKeyboardButton(text="⚙️ Admin Panel", callback_data="menu_admin")])
             
     elif role == "none":
@@ -23,4 +24,26 @@ def get_main_keyboard(role: str) -> InlineKeyboardMarkup:
         buttons.append([InlineKeyboardButton(text="🤖 Bot Status", callback_data="dev_bot_status")])
         buttons.append([InlineKeyboardButton(text="🚧 Maintenance Mode", callback_data="dev_maintenance")])
 
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+def get_back_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔙 Go Back", callback_data="go_back")]
+    ])
+
+def get_pagination_keyboard(current_page: int, total_pages: int) -> InlineKeyboardMarkup:
+    buttons = []
+    nav_buttons = []
+    
+    if current_page > 1:
+        nav_buttons.append(InlineKeyboardButton(text="⬅️ Prev", callback_data=f"checks_page_{current_page - 1}"))
+    
+    if current_page < total_pages:
+        nav_buttons.append(InlineKeyboardButton(text="Next ➡️", callback_data=f"checks_page_{current_page + 1}"))
+        
+    if nav_buttons:
+        buttons.append(nav_buttons)
+        
+    buttons.append([InlineKeyboardButton(text="🔙 Go Back", callback_data="go_back")])
+    
     return InlineKeyboardMarkup(inline_keyboard=buttons)
