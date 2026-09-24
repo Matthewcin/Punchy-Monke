@@ -1,10 +1,10 @@
 from aiogram import Router, F
 from aiogram.types import Message
 from database.repo_users import add_user, get_user
-from database.repo_logs import get_user_checks_count, get_user_checks_paginated
+from database.repo_logs import get_user_checks_count
 from utils.roles import get_user_role
 from utils.keyboards import get_main_keyboard
-from utils.messages import get_start_message
+from utils.messages.start import get_start_message
 
 user_router = Router()
 

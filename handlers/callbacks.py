@@ -1,11 +1,11 @@
 import math
 from aiogram import Router, F
 from aiogram.types import CallbackQuery
-from database.repo_users import add_user, get_user
+from database.repo_users import get_user
 from database.repo_logs import get_user_checks_count, get_user_checks_paginated
 from utils.roles import get_user_role
 from utils.keyboards import get_main_keyboard, get_pagination_keyboard
-from utils.messages import get_start_message
+from utils.messages.start import get_start_message
 
 callback_router = Router()
 

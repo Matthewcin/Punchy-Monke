@@ -13,7 +13,8 @@ async def init_db(pool):
                 plan_type VARCHAR(20) DEFAULT 'none',
                 subscription_expiry TIMESTAMP,
                 has_used_trial BOOLEAN DEFAULT FALSE,
-                checks_performed INT DEFAULT 0
+                checks_performed INT DEFAULT 0,
+                total_days_purchased INT DEFAULT 0
             );
 
             CREATE TABLE IF NOT EXISTS check_logs (

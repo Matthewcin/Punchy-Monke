@@ -24,12 +24,12 @@ async def grant_subscription(pool, telegram_id, days, plan_name, is_trial=False)
         if is_trial:
             await conn.execute('''
                 UPDATE users 
-                SET subscription_expiry = $1, has_used_trial = TRUE, plan_type = $3
+                SET subscription_expiry = $1, has_used_trial = TRUE, plan_type = $3, total_days_purchased = total_days_purchased + $4
                 WHERE telegram_id = $2
-            ''', expiry, telegram_id, plan_name)
+            ''', expiry, telegram_id, plan_name, days)
         else:
             await conn.execute('''
                 UPDATE users 
-                SET subscription_expiry = $1, plan_type = $3
+                SET subscription_expiry = $1, plan_type = $3, total_days_purchased = total_days_purchased + $4
                 WHERE telegram_id = $2
-            ''', expiry, telegram_id, plan_name)
+            ''', expiry, telegram_id, plan_name, days)

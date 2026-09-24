@@ -9,6 +9,7 @@ from config import BOT_TOKEN
 from database.db import get_pool, init_db
 from handlers.user import user_router
 from handlers.callbacks import callback_router
+from handlers.profile import profile_router
 
 logging.basicConfig(level=logging.INFO)
 
@@ -28,6 +29,7 @@ async def main():
     dp["db_pool"] = pool
     dp.include_router(user_router)
     dp.include_router(callback_router)
+    dp.include_router(profile_router)
     
     app = web.Application()
     app.router.add_get('/', handle_ping)
