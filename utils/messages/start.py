@@ -23,6 +23,6 @@ def get_start_message(user_first_name: str, telegram_id: int, user_data: dict) -
         "• MyGiftCardMall\n"
         "• Walmart\n\n"
         "<i>Select an option below to manage your subscription or start checking.</i>\n\n"
-        f"<code>{VERSION}</code> - <a href='https://t.me/whois_tyler'>Coded by VirusNTO</a>"
+        f"<code>{VERSION}</code>"
     )
     return text
