@@ -53,7 +53,9 @@ def get_pagination_keyboard(current_page: int, total_pages: int) -> InlineKeyboa
 
 def get_admin_panel_keyboard(role: str) -> InlineKeyboardMarkup:
     buttons = [
-        [InlineKeyboardButton(text="🐛 DevLogs", callback_data="admin_devlogs_page_1")]
+        [InlineKeyboardButton(text="🐛 DevLogs", callback_data="admin_devlogs_page_1")],
+        [InlineKeyboardButton(text="🎭 Simulate Roles", callback_data="admin_simulate_roles")],
+        [InlineKeyboardButton(text="📢 Broadcast", callback_data="admin_broadcast")]
     ]
     buttons.append([InlineKeyboardButton(text="🔙 Go Back", callback_data="go_back")])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
@@ -64,6 +66,16 @@ def get_dev_panel_keyboard() -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text="🤖 Bot Status", callback_data="dev_bot_status")],
         [InlineKeyboardButton(text="🚧 Maintenance Mode", callback_data="dev_maintenance")],
         [InlineKeyboardButton(text="🔙 Go Back", callback_data="go_back")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+def get_role_simulation_keyboard() -> InlineKeyboardMarkup:
+    buttons = [
+        [InlineKeyboardButton(text="👤 User (None)", callback_data="sim_role_none")],
+        [InlineKeyboardButton(text="🟢 Active User", callback_data="sim_role_active_user")],
+        [InlineKeyboardButton(text="🔴 Expired User", callback_data="sim_role_expired_user")],
+        [InlineKeyboardButton(text="⚙️ Admin", callback_data="sim_role_admin")],
+        [InlineKeyboardButton(text="🔙 Go Back", callback_data="menu_admin")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
@@ -104,5 +116,23 @@ def get_maintenance_confirm_keyboard() -> InlineKeyboardMarkup:
         [
             InlineKeyboardButton(text="✅ Yes", callback_data="dev_maint_confirm_yes"),
             InlineKeyboardButton(text="❌ No", callback_data="dev_maint_confirm_no")
+        ]
+    ])
+
+def get_broadcast_menu_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="👥 All Users", callback_data="bc_target_all")],
+        [InlineKeyboardButton(text="⏳ Expired Users", callback_data="bc_target_expired")],
+        [InlineKeyboardButton(text="🪙 Users with Active Subscription", callback_data="bc_target_active")],
+        [InlineKeyboardButton(text="🔒 New Users (With no Trial enabled or Succeed Orders)", callback_data="bc_target_new")],
+        [InlineKeyboardButton(text="👑 Used Trial Users (Never ordered)", callback_data="bc_target_trial")],
+        [InlineKeyboardButton(text="🔙 Go Back", callback_data="menu_admin")]
+    ])
+
+def get_broadcast_confirm_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="✅ Yes", callback_data="bc_confirm_yes"),
+            InlineKeyboardButton(text="❌ No", callback_data="bc_confirm_no")
         ]
     ])
