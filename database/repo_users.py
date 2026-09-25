@@ -14,6 +14,10 @@ async def get_user(pool, telegram_id):
             SELECT * FROM users WHERE telegram_id = $1
         ''', telegram_id)
 
+async def get_all_users(pool):
+    async with pool.acquire() as conn:
+        return await conn.fetch('SELECT telegram_id FROM users')
+
 async def grant_subscription(pool, telegram_id, days, plan_name, is_trial=False):
     expiry = datetime.now() + timedelta(days=days)
     

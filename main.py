@@ -7,6 +7,7 @@ from aiogram.enums import ParseMode
 from aiohttp import web
 from config import BOT_TOKEN
 from database.db import get_pool, init_db
+from utils.middleware import MaintenanceMiddleware
 from handlers.user import user_router
 from handlers.callbacks import callback_router
 from handlers.profile import profile_router
@@ -32,6 +33,10 @@ async def main():
     
     dp = Dispatcher()
     dp["db_pool"] = pool
+    
+    dp.message.middleware(MaintenanceMiddleware(pool))
+    dp.callback_query.middleware(MaintenanceMiddleware(pool))
+    
     dp.include_router(user_router)
     dp.include_router(callback_router)
     dp.include_router(profile_router)

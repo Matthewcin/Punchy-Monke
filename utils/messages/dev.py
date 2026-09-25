@@ -5,11 +5,18 @@ def get_dev_panel_message() -> str:
     )
     return text
 
-def get_simulation_message(role: str) -> str:
+def get_maintenance_message(is_active: bool) -> str:
+    status = "🟢 Active" if is_active else "🔴 Inactive"
     text = (
-        "<b>🎭 Role Simulation</b>\n\n"
-        f"Select a role to preview how the Main Menu looks for them.\n"
-        f"Currently previewing: <b>{role.replace('_', ' ').capitalize()}</b>\n\n"
-        "<i>Note: Buttons will execute normally based on your actual database permissions.</i>"
+        "<b>🚧 Maintenance Mode</b>\n\n"
+        f"Current Status: <b>{status}</b>\n\n"
+        "Toggle the maintenance mode below. When turned ON, a broadcast will be sent to all users and non-admins will be blocked."
+    )
+    return text
+
+def get_maintenance_confirm_message() -> str:
+    text = (
+        "⚠️ <b>ARE YOU SURE THAT YOU WANT TO SET MAINTENANCE MODE?</b>\n\n"
+        "This will instantly broadcast a maintenance message to all users and block their access."
     )
     return text

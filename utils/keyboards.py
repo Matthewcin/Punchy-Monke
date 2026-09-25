@@ -61,20 +61,9 @@ def get_admin_panel_keyboard(role: str) -> InlineKeyboardMarkup:
 def get_dev_panel_keyboard() -> InlineKeyboardMarkup:
     buttons = [
         [InlineKeyboardButton(text="📝 Add Log", callback_data="dev_add_log")],
-        [InlineKeyboardButton(text="🎭 Simulate Roles", callback_data="dev_simulate_roles")],
         [InlineKeyboardButton(text="🤖 Bot Status", callback_data="dev_bot_status")],
         [InlineKeyboardButton(text="🚧 Maintenance Mode", callback_data="dev_maintenance")],
         [InlineKeyboardButton(text="🔙 Go Back", callback_data="go_back")]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=buttons)
-
-def get_role_simulation_keyboard() -> InlineKeyboardMarkup:
-    buttons = [
-        [InlineKeyboardButton(text="👤 User (None)", callback_data="sim_role_none")],
-        [InlineKeyboardButton(text="🟢 Active User", callback_data="sim_role_active_user")],
-        [InlineKeyboardButton(text="🔴 Expired User", callback_data="sim_role_expired_user")],
-        [InlineKeyboardButton(text="⚙️ Admin", callback_data="sim_role_admin")],
-        [InlineKeyboardButton(text="🔙 Go Back", callback_data="menu_dev")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
@@ -101,4 +90,19 @@ def get_devlog_message_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🔙 Go Back to Logs", callback_data="admin_devlogs_page_1")],
         [InlineKeyboardButton(text="⚙️ Go Back to Admin Panel", callback_data="menu_admin")]
+    ])
+
+def get_maintenance_keyboard(is_active: bool) -> InlineKeyboardMarkup:
+    status_btn = "🔴 Turn OFF" if is_active else "🟢 Turn ON"
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text=status_btn, callback_data="dev_maint_toggle")],
+        [InlineKeyboardButton(text="🔙 Go Back", callback_data="menu_dev")]
+    ])
+
+def get_maintenance_confirm_keyboard() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="✅ Yes", callback_data="dev_maint_confirm_yes"),
+            InlineKeyboardButton(text="❌ No", callback_data="dev_maint_confirm_no")
+        ]
     ])
