@@ -78,6 +78,9 @@ async def cb_broadcast_send(callback: CallbackQuery, db_pool, state: FSMContext)
     target_type = data['target_type']
     message_text = data['broadcast_text']
     
+    sender_name = callback.from_user.first_name
+    final_message = f"{message_text}\n\n<i>Broadcast Sent by: {sender_name}</i>"
+    
     await callback.message.edit_text("⏳ Broadcasting message, please wait...")
     
     users = await get_broadcast_users(db_pool, target_type)
@@ -86,7 +89,8 @@ async def cb_broadcast_send(callback: CallbackQuery, db_pool, state: FSMContext)
     
     for u in users:
         try:
-            await callback.bot.send_message(u['telegram_id'], message_text)
+            # --- MODIFICADO: enviamos final_message en lugar de message_text ---
+            await callback.bot.send_message(u['telegram_id'], final_message)
             success += 1
         except Exception:
             failed += 1
