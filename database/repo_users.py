@@ -18,10 +18,41 @@ async def get_all_users(pool):
     async with pool.acquire() as conn:
         return await conn.fetch('SELECT telegram_id FROM users')
 
-async def grant_subscription(pool, telegram_id, days, plan_name, is_trial=False):
-    expiry = datetime.now() + timedelta(days=days)
+async def get_broadcast_users(pool, target_type: str):
+    async with pool.acquire() as conn:
+        if target_type == "all":
+            return await conn.fetch('SELECT telegram_id FROM users')
+        elif target_type == "expired":
+            return await conn.fetch('''
+                SELECT telegram_id FROM users 
+                WHERE plan_type != 'none' 
+                AND plan_type != 'lifetime' 
+                AND subscription_expiry <= CURRENT_TIMESTAMP
+            ''')
+        elif target_type == "active":
+            return await conn.fetch('''
+                SELECT telegram_id FROM users 
+                WHERE plan_type = 'lifetime' 
+                OR subscription_expiry > CURRENT_TIMESTAMP
+            ''')
+        elif target_type == "new":
+            return await conn.fetch('''
+                SELECT telegram_id FROM users 
+                WHERE has_used_trial = FALSE 
+                AND total_days_purchased = 0
+            ''')
+        elif target_type == "trial":
+            return await conn.fetch('''
+                SELECT telegram_id FROM users 
+                WHERE has_used_trial = TRUE 
+                AND total_days_purchased = 0
+            ''')
+        return []
+
+async def grant_subscription(pool, telegram_id, days, plan_name, is_trial=False, hours=0):
+    expiry = datetime.now() + timedelta(days=days, hours=hours)
     
-    if days == 9999:
+    if days >= 9999:
         expiry = datetime.now() + timedelta(days=36500)
 
     async with pool.acquire() as conn:
