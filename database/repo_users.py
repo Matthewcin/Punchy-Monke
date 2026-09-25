@@ -49,10 +49,10 @@ async def get_broadcast_users(pool, target_type: str):
             ''')
         return []
 
-async def grant_subscription(pool, telegram_id, days, plan_name, is_trial=False):
-    expiry = datetime.now() + timedelta(days=days)
+async def grant_subscription(pool, telegram_id, days, plan_name, is_trial=False, hours=0):
+    expiry = datetime.now() + timedelta(days=days, hours=hours)
     
-    if days == 9999:
+    if days >= 9999:
         expiry = datetime.now() + timedelta(days=36500)
 
     async with pool.acquire() as conn:
