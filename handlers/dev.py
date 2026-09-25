@@ -51,6 +51,17 @@ async def cb_maintenance_toggle(callback: CallbackQuery, db_pool):
     
     if is_active:
         await set_setting(db_pool, 'maintenance_mode', 'false')
+        
+        users = await get_all_users(db_pool)
+        for u in users:
+            try:
+                await callback.bot.send_message(
+                    u['telegram_id'], 
+                    "✅ <b>Maintenance Completed</b>\n\nThe bot is back online and operational! Thank you for your patience :)."
+                )
+            except Exception:
+                pass
+        
         text = get_maintenance_message(False)
         keyboard = get_maintenance_keyboard(False)
         await callback.message.edit_text(text, reply_markup=keyboard)
