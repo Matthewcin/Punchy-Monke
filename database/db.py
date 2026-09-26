@@ -2,9 +2,6 @@ import asyncpg
 from config import DB_URL
 
 async def get_pool():
-    return await asyncpg.create_pool(DB_URL)
-
-async def get_pool():
     return await asyncpg.create_pool(DB_URL, statement_cache_size=0)
 
 async def init_db(pool):
@@ -49,6 +46,8 @@ async def init_db(pool):
                 payment_status VARCHAR(20),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
+            
+            ALTER TABLE payments ADD COLUMN IF NOT EXISTS viewed BOOLEAN DEFAULT FALSE;
 
             CREATE TABLE IF NOT EXISTS codes (
                 id SERIAL PRIMARY KEY,

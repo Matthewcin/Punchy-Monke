@@ -3,6 +3,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from database.repo_users import get_user
 from database.repo_logs import get_user_checks_count, get_user_checks_paginated
+from database.repo_orders import get_user_order_status
 from utils.roles import get_user_role
 from utils.keyboards import get_main_keyboard, get_pagination_keyboard
 from utils.messages.start import get_start_message
@@ -16,8 +17,9 @@ async def cb_go_back(callback: CallbackQuery, db_pool):
     
     has_checks = checks_count > 0
     role = get_user_role(callback.from_user.id, user_data)
+    orders_emoji = await get_user_order_status(db_pool, callback.from_user.id)
     
-    keyboard = get_main_keyboard(role, has_checks)
+    keyboard = get_main_keyboard(role, has_checks, orders_emoji)
     text = get_start_message(callback.from_user.first_name, callback.from_user.id, user_data)
     
     await callback.message.edit_text(text, reply_markup=keyboard)

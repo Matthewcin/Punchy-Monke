@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
@@ -174,11 +174,22 @@ async def cb_pay_crypto_check(callback: CallbackQuery, db_pool):
         status_data = await get_payment_status(payment_id)
         current_status = status_data.get("payment_status", "unknown")
         
-        if current_status in ["finished", "confirmed", "sending"]:
-            async with db_pool.acquire() as conn:
-                record = await conn.fetchrow('SELECT payment_status, plan_purchased FROM payments WHERE transaction_id = $1', payment_id)
+        async with db_pool.acquire() as conn:
+            record = await conn.fetchrow('SELECT payment_status, plan_purchased, created_at FROM payments WHERE transaction_id = $1', payment_id)
+            
+            if not record:
+                await callback.answer("Order not found in database.", show_alert=True)
+                return
                 
-                if record and record['payment_status'] != 'completed':
+            if record['payment_status'] != 'completed':
+                if current_status in ['expired', 'failed'] or (record['payment_status'] in ['pending', 'waiting'] and datetime.now() - record['created_at'] > timedelta(minutes=30)):
+                    await conn.execute("UPDATE payments SET payment_status = 'timeout' WHERE transaction_id = $1", payment_id)
+                    from utils.keyboards import get_user_order_view_keyboard
+                    kb = get_user_order_view_keyboard(1, 'timeout', record['plan_purchased'])
+                    await callback.message.edit_text("❌ This order has been cancelled due to timeout (30 minutes passed).", reply_markup=kb)
+                    return
+
+                if current_status in ["finished", "confirmed", "sending"]:
                     await conn.execute('UPDATE payments SET payment_status = $1 WHERE transaction_id = $2', 'completed', payment_id)
                     plan = record['plan_purchased']
                     
@@ -191,10 +202,9 @@ async def cb_pay_crypto_check(callback: CallbackQuery, db_pool):
                     from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
                     kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🔙 Back to Menu", callback_data="menu_subscription")]])
                     await callback.message.edit_text(text, reply_markup=kb)
-                else:
-                    await callback.answer("This payment has already been credited to your account.", show_alert=True)
-        else:
-            await callback.answer(f"Status: {current_status.upper()}. The network is still processing the transaction. Please wait...", show_alert=True)
+                    return
+                    
+        await callback.answer(f"Status: {current_status.upper()}. The network is still processing the transaction. Please wait...", show_alert=True)
             
     except Exception:
         await callback.answer("Unable to check status. Try again in a few seconds.", show_alert=True)

@@ -16,6 +16,7 @@ from handlers.admin import admin_router
 from handlers.dev import dev_router
 from handlers.subscription import sub_router
 from handlers.admin_codes import admin_codes_router
+from handlers.orders import orders_router
 from nowpayments.ipn import verify_ipn_request
 
 logging.basicConfig(level=logging.INFO)
@@ -90,6 +91,7 @@ async def main():
     dp.include_router(dev_router)
     dp.include_router(sub_router)
     dp.include_router(admin_codes_router)
+    dp.include_router(orders_router)
     
     app = web.Application()
     app['db_pool'] = pool
