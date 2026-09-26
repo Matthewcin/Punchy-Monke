@@ -2,6 +2,9 @@ import asyncpg
 from config import DB_URL
 
 async def get_pool():
+    return await asyncpg.create_pool(DB_URL)
+
+async def get_pool():
     return await asyncpg.create_pool(DB_URL, statement_cache_size=0)
 
 async def init_db(pool):
@@ -17,7 +20,6 @@ async def init_db(pool):
             ALTER TABLE users ADD COLUMN IF NOT EXISTS has_used_trial BOOLEAN DEFAULT FALSE;
             ALTER TABLE users ADD COLUMN IF NOT EXISTS checks_performed INT DEFAULT 0;
             ALTER TABLE users ADD COLUMN IF NOT EXISTS total_days_purchased INT DEFAULT 0;
-            ALTER TABLE users ADD COLUMN IF NOT EXISTS last_bot_message_id BIGINT;
 
             CREATE TABLE IF NOT EXISTS check_logs (
                 log_id SERIAL PRIMARY KEY,
