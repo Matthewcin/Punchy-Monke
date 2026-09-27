@@ -1,3 +1,4 @@
+import time
 from aiogram import Router, F
 from aiogram.types import CallbackQuery, Message
 from aiogram.fsm.context import FSMContext
@@ -5,9 +6,10 @@ from aiogram.fsm.state import State, StatesGroup
 from database.repo_users import get_user, get_all_users
 from database.repo_devlogs import add_devlog
 from database.repo_settings import get_setting, set_setting
+from database.repo_dev import get_advanced_db_stats
 from utils.roles import get_user_role
 from utils.keyboards import get_back_keyboard, get_dev_panel_keyboard, get_maintenance_keyboard, get_maintenance_confirm_keyboard
-from utils.messages.dev import get_dev_panel_message, get_maintenance_message, get_maintenance_confirm_message
+from utils.messages.dev import get_dev_panel_message, get_maintenance_message, get_maintenance_confirm_message, get_bot_status_message
 
 dev_router = Router()
 
@@ -26,6 +28,23 @@ async def cb_dev_panel(callback: CallbackQuery, db_pool):
     text = get_dev_panel_message()
     keyboard = get_dev_panel_keyboard()
     await callback.message.edit_text(text, reply_markup=keyboard)
+
+@dev_router.callback_query(F.data == "dev_bot_status")
+async def cb_dev_bot_status(callback: CallbackQuery, db_pool):
+    user_data = await get_user(db_pool, callback.from_user.id)
+    if get_user_role(callback.from_user.id, user_data) != "dev":
+        return
+
+    start_time = time.perf_counter()
+    
+    db_stats = await get_advanced_db_stats(db_pool)
+    maint_status = await get_setting(db_pool, 'maintenance_mode')
+    maintenance_active = maint_status == 'true'
+        
+    ping_ms = int((time.perf_counter() - start_time) * 1000)
+    
+    text = get_bot_status_message(db_stats, ping_ms, maintenance_active)
+    await callback.message.edit_text(text, reply_markup=get_dev_panel_keyboard())
 
 @dev_router.callback_query(F.data == "dev_maintenance")
 async def cb_maintenance_menu(callback: CallbackQuery, db_pool):
@@ -57,7 +76,7 @@ async def cb_maintenance_toggle(callback: CallbackQuery, db_pool):
             try:
                 await callback.bot.send_message(
                     u['telegram_id'], 
-                    "✅ <b>Maintenance Completed</b>\n\nThe bot is back online and operational! Thank you for your patience :)."
+                    "<b>Maintenance Completed</b>\n\nThe bot is back online and operational! Thank you for your patience."
                 )
             except Exception:
                 pass
@@ -83,7 +102,7 @@ async def cb_maintenance_confirm_yes(callback: CallbackQuery, db_pool):
         try:
             await callback.bot.send_message(
                 u['telegram_id'], 
-                "🚧 <b>Maintenance Break</b>\n\nThe bot is currently undergoing maintenance and will be back shortly."
+                "<b>Maintenance Break</b>\n\nThe bot is currently undergoing maintenance and will be back shortly."
             )
         except Exception:
             pass
@@ -109,7 +128,7 @@ async def cb_add_log(callback: CallbackQuery, state: FSMContext, db_pool):
         return
         
     await state.set_state(DevLogState.waiting_for_log)
-    text = "📝 <b>Send the new Developer Log message:</b>\n\n<i>You can use HTML formatting.</i>"
+    text = "<b>Send the new Developer Log message:</b>\n\n<i>You can use HTML formatting.</i>"
     await callback.message.edit_text(text, reply_markup=get_back_keyboard())
 
 @dev_router.message(DevLogState.waiting_for_log)
@@ -117,5 +136,5 @@ async def process_new_log(message: Message, state: FSMContext, db_pool):
     await add_devlog(db_pool, message.text)
     await state.clear()
     
-    text = "✅ <b>DevLog successfully saved!</b>\n\nGo back to the dev panel to view it."
+    text = "<b>DevLog successfully saved!</b>\n\nGo back to the dev panel to view it."
     await message.answer(text, reply_markup=get_back_keyboard())

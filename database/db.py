@@ -65,4 +65,15 @@ async def init_db(pool):
                 redeemed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(code_id, telegram_id)
             );
+
+            CREATE TABLE IF NOT EXISTS support_tickets (
+                ticket_id SERIAL PRIMARY KEY,
+                telegram_id BIGINT REFERENCES users(telegram_id),
+                ticket_type VARCHAR(20),
+                status VARCHAR(20) DEFAULT 'unsolved',
+                user_message TEXT,
+                admin_message TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
         ''')
