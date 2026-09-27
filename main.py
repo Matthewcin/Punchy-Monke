@@ -9,6 +9,7 @@ from config import BOT_TOKEN
 from database.db import get_pool, init_db
 from database.repo_users import grant_subscription
 from utils.middleware import MaintenanceMiddleware
+from utils.private_chat import PrivateChatMiddleware
 from handlers.user import user_router
 from handlers.callbacks import callback_router
 from handlers.profile import profile_router
@@ -17,6 +18,8 @@ from handlers.dev import dev_router
 from handlers.subscription import sub_router
 from handlers.admin_codes import admin_codes_router
 from handlers.orders import orders_router
+from handlers.tickets import tickets_router
+from handlers.admin_tickets import admin_tickets_router
 from nowpayments.ipn import verify_ipn_request
 
 logging.basicConfig(level=logging.INFO)
@@ -67,7 +70,7 @@ async def handle_nowpayments_ipn(request):
                 try:
                     await bot.send_message(
                         telegram_id,
-                        f"✅ <b>Payment Confirmed!</b>\n\nYour <b>{plan.capitalize()}</b> plan has been automatically activated via IPN."
+                        f"Payment Confirmed!\n\nYour {plan.capitalize()} plan has been automatically activated via IPN."
                     )
                 except Exception:
                     pass
@@ -81,6 +84,9 @@ async def main():
     dp = Dispatcher()
     dp["db_pool"] = pool
     
+    dp.message.middleware(PrivateChatMiddleware())
+    dp.callback_query.middleware(PrivateChatMiddleware())
+    
     dp.message.middleware(MaintenanceMiddleware(pool))
     dp.callback_query.middleware(MaintenanceMiddleware(pool))
     
@@ -92,6 +98,8 @@ async def main():
     dp.include_router(sub_router)
     dp.include_router(admin_codes_router)
     dp.include_router(orders_router)
+    dp.include_router(tickets_router)
+    dp.include_router(admin_tickets_router)
     
     app = web.Application()
     app['db_pool'] = pool

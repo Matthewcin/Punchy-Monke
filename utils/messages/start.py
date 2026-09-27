@@ -22,6 +22,7 @@ def get_start_message(user_first_name: str, telegram_id: int, user_data: dict) -
         "• American Express\n"
         "• MyGiftCardMall\n"
         "• Walmart\n\n"
-        "<i>Select an option below to manage your subscription or start checking.</i>"
+        "<i>Select an option below to manage your subscription or start checking.</i>\n\n"
+        "🔐 100% Privacy: All inputs are processed in volatile memory and encrypted at rest. We maintain a strict zero-log policy for full card codes."
     )
     return text

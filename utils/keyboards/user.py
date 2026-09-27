@@ -1,6 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-def get_main_keyboard(role: str, has_checks: bool, orders_emoji: str = "📦") -> InlineKeyboardMarkup:
+def get_main_keyboard(role: str, has_checks: bool, orders_emoji: str = "📦", has_orders: bool = False) -> InlineKeyboardMarkup:
     buttons = []
 
     if role in ["admin", "dev", "active_user", "expired_user"]:
@@ -10,6 +10,9 @@ def get_main_keyboard(role: str, has_checks: bool, orders_emoji: str = "📦") -
             InlineKeyboardButton(text="💎 Subscription", callback_data="menu_subscription"),
             InlineKeyboardButton(text=f"{orders_emoji} Orders", callback_data="menu_orders")
         ])
+        
+        if has_orders:
+            buttons.append([InlineKeyboardButton(text="🎫 Support", callback_data="menu_support")])
         
         admin_dev_row = []
         if role in ["admin", "dev"]:
@@ -29,6 +32,9 @@ def get_main_keyboard(role: str, has_checks: bool, orders_emoji: str = "📦") -
             InlineKeyboardButton(text="💎 Subscription", callback_data="menu_subscription"),
             InlineKeyboardButton(text=f"{orders_emoji} Orders", callback_data="menu_orders")
         ])
+        
+        if has_orders:
+            buttons.append([InlineKeyboardButton(text="🎫 Support", callback_data="menu_support")])
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 

@@ -12,4 +12,6 @@ NOWPAYMENTS_IPN_KEY = os.getenv("NOWPAYMENTS_IPN_KEY")
 ADMIN_IDS = [int(admin_id) for admin_id in os.getenv("ADMIN_IDS", "").split(",") if admin_id]
 DEV_ID = int(os.getenv("DEV_ID", 0))
 
-VERSION = "dev1.0.5"
+ENCRYPTION_KEY = "tA5UrE0z-drZ0MQ0DFO2znT-VUWPoVEpJCkY_DZ44Xo="
+
+VERSION = "dev1.0.7"
