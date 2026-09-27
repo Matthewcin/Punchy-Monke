@@ -1,13 +1,14 @@
 import asyncio
 import logging
 import os
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiohttp import web
 from config import BOT_TOKEN
 from database.db import get_pool, init_db
 from database.repo_users import grant_subscription
+from database.repo_logs import get_public_transparency_logs
 from utils.middleware import MaintenanceMiddleware
 from utils.private_chat import PrivateChatMiddleware
 from handlers.user import user_router
@@ -34,6 +35,23 @@ bot = Bot(
 
 async def handle_ping(request):
     return web.Response(text="Bot is running!")
+
+async def handle_transparency(request):
+    pool = request.app['db_pool']
+    logs = await get_public_transparency_logs(pool, 50)
+    
+    html_content = "<html><head><title>Transparency Portal</title>"
+    html_content += "<style>body{font-family:monospace; background:#000000; color:#00ff00; padding:20px;} table{border-collapse:collapse; width:100%;} th, td{border:1px solid #00ff00; padding:8px; text-align:left; word-break:break-all;}</style></head><body>"
+    html_content += "<h2>Secure Engine - Live Transparency Portal</h2>"
+    html_content += "<p>End-to-End Encrypted Data at Rest. Only encrypted blobs are stored in our database.</p>"
+    html_content += "<table><tr><th>Log ID</th><th>Provider</th><th>Status</th><th>Encrypted Blob (AES)</th><th>Timestamp</th></tr>"
+    
+    for log in logs:
+        html_content += f"<tr><td>{log['log_id']}</td><td>{log['provider']}</td><td>{log['result_status']}</td><td>{log['encrypted_data']}</td><td>{log['check_timestamp']}</td></tr>"
+    
+    html_content += "</table></body></html>"
+    
+    return web.Response(text=html_content, content_type='text/html')
 
 async def handle_nowpayments_ipn(request):
     signature = request.headers.get('x-nowpayments-sig')
@@ -104,6 +122,7 @@ async def main():
     app = web.Application()
     app['db_pool'] = pool
     app.router.add_get('/', handle_ping)
+    app.router.add_get('/transparency', handle_transparency)
     app.router.add_post('/api/ipn', handle_nowpayments_ipn)
     
     runner = web.AppRunner(app)

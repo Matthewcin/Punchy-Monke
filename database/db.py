@@ -26,6 +26,8 @@ async def init_db(pool):
                 check_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
+            ALTER TABLE check_logs ADD COLUMN IF NOT EXISTS encrypted_data TEXT;
+
             CREATE TABLE IF NOT EXISTS bot_settings (
                 setting_key VARCHAR(50) PRIMARY KEY,
                 setting_value VARCHAR(255)
