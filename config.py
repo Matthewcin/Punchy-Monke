@@ -14,4 +14,4 @@ DEV_ID = int(os.getenv("DEV_ID", 0))
 
 ENCRYPTION_KEY = "tA5UrE0z-drZ0MQ0DFO2znT-VUWPoVEpJCkY_DZ44Xo="
 
-VERSION = "dev1.0.7"
+VERSION = "dev1.0.8"
