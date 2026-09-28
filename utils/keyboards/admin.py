@@ -12,7 +12,8 @@ def get_admin_panel_keyboard(role: str) -> InlineKeyboardMarkup:
         ],
         [
             InlineKeyboardButton(text="🙂 Support Tickets", callback_data="admin_check_tickets"),
-            InlineKeyboardButton(text="🐛 DevLogs", callback_data="admin_devlogs_page_1")
+            InlineKeyboardButton(text="🐛 DevLogs", callback_data="admin_devlogs_page_1"),
+            InlineKeyboardButton(text="🔠 Modify", callback_data="admin_modify_menu")
         ],
         [
             InlineKeyboardButton(text="🔙 Go Back", callback_data="go_back")

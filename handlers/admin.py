@@ -89,7 +89,6 @@ async def cb_broadcast_send(callback: CallbackQuery, db_pool, state: FSMContext)
     
     for u in users:
         try:
-            # --- MODIFICADO: enviamos final_message en lugar de message_text ---
             await callback.bot.send_message(u['telegram_id'], final_message)
             success += 1
         except Exception:

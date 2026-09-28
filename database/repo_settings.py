@@ -1,7 +1,6 @@
 async def get_setting(pool, key: str) -> str:
     async with pool.acquire() as conn:
-        val = await conn.fetchval('SELECT setting_value FROM bot_settings WHERE setting_key = $1', key)
-        return val or "false"
+        return await conn.fetchval('SELECT setting_value FROM bot_settings WHERE setting_key = $1', key)
 
 async def set_setting(pool, key: str, value: str):
     async with pool.acquire() as conn:

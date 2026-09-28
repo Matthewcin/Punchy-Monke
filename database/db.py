@@ -9,8 +9,10 @@ async def init_db(pool):
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 telegram_id BIGINT PRIMARY KEY,
-                role VARCHAR(10) DEFAULT 'user'
+                role VARCHAR(20) DEFAULT 'user'
             );
+            
+            ALTER TABLE users ALTER COLUMN role TYPE VARCHAR(20);
 
             ALTER TABLE users ADD COLUMN IF NOT EXISTS plan_type VARCHAR(20) DEFAULT 'none';
             ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_expiry TIMESTAMP;
@@ -27,6 +29,8 @@ async def init_db(pool):
             );
 
             ALTER TABLE check_logs ADD COLUMN IF NOT EXISTS encrypted_data TEXT;
+            ALTER TABLE check_logs ADD COLUMN IF NOT EXISTS is_trial BOOLEAN DEFAULT FALSE;
+            ALTER TABLE check_logs ADD COLUMN IF NOT EXISTS batch_id VARCHAR(50);
 
             CREATE TABLE IF NOT EXISTS bot_settings (
                 setting_key VARCHAR(50) PRIMARY KEY,

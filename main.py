@@ -1,16 +1,18 @@
 import asyncio
 import logging
 import os
-from aiogram import Bot, Dispatcher, F
+from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiohttp import web
+
 from config import BOT_TOKEN
 from database.db import get_pool, init_db
 from database.repo_users import grant_subscription
 from database.repo_logs import get_public_transparency_logs
 from utils.middleware import MaintenanceMiddleware
 from utils.private_chat import PrivateChatMiddleware
+
 from handlers.user import user_router
 from handlers.callbacks import callback_router
 from handlers.profile import profile_router
@@ -21,7 +23,10 @@ from handlers.admin_codes import admin_codes_router
 from handlers.orders import orders_router
 from handlers.tickets import tickets_router
 from handlers.admin_tickets import admin_tickets_router
-from nowpayments.ipn import verify_ipn_request
+from handlers.trial import trial_router
+from handlers.admin_modify import admin_modify_router
+from handlers.logs import logs_router
+from engines.router import engines_router
 
 logging.basicConfig(level=logging.INFO)
 
@@ -63,6 +68,7 @@ async def handle_nowpayments_ipn(request):
     except Exception:
         return web.Response(status=400)
         
+    from nowpayments.ipn import verify_ipn_request
     if not verify_ipn_request(data, signature):
         return web.Response(status=403)
         
@@ -118,6 +124,12 @@ async def main():
     dp.include_router(orders_router)
     dp.include_router(tickets_router)
     dp.include_router(admin_tickets_router)
+    dp.include_router(trial_router)
+    dp.include_router(admin_modify_router)
+    
+    # Nuevos routers
+    dp.include_router(engines_router)
+    dp.include_router(logs_router)
     
     app = web.Application()
     app['db_pool'] = pool

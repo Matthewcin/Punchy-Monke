@@ -25,4 +25,16 @@ def get_start_message(user_first_name: str, telegram_id: int, user_data: dict) -
         "<i>Select an option below to manage your subscription or start checking.</i>\n\n"
         "🔐 100% Privacy: All inputs are processed in volatile memory and encrypted at rest. We maintain a strict zero-log policy for full card codes."
     )
+    
+    if plan == 'trial' and expiry:
+        now = datetime.now()
+        if expiry > now:
+            delta = expiry - now
+            total_seconds = int(delta.total_seconds())
+            hours, remainder = divmod(total_seconds, 3600)
+            minutes, _ = divmod(remainder, 60)
+            text += f"\n\n<b>Trial Time Left:</b> <code>{hours}h {minutes}m</code>"
+        else:
+            text += "\n\n<b>Trial Expired</b>"
+            
     return text
